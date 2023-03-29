@@ -1,27 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import axios from "axios";
 import "./App.css";
-import Baslik from "./nasa/Baslik.js";
-import Footer from "./nasa/Footer.js";
-import OrtaBolum from "./nasa/OrtaBolum.js";
-import { sahteVeri } from "../sahteVeri";
-import axios from "axious";
+import { useEffect, useState } from "react";
+import BiComponent from "./BiComponent";
+
 function App() {
-  const [tarih, setTarih] = useState("1998-03-28");
-  const [data, setData] = useState(sahteVeri);
+  const [apodData, setApodData] = useState();
+  const [datePicker, setDatePicker] = useState(
+    new Date("2022-08-21").toISOString().slice(0, 10)
+  );
+
   useEffect(() => {
+    // Optionally the request above could also be done as
     axios
-      .get(
-        "https://api.nasa.gov/planetary/apod?api_key=3wkI5lZxyiVojEhKgnaeG2kJwgzf00RAFI97pnsz"
-      )
-      .then((response) => {
-        setData(response.data);
+      .get("https://api.nasa.gov/planetary/apod", {
+        params: {
+          api_key: "UfqIDVnoxPlbFK9aY5Fr93Tbhe16GI5j7utxYAVc",
+          date: datePicker,
+        },
+      })
+      .then(function(response) {
+        console.log(response);
+        setApodData(response.data);
+      })
+      .catch(function(error) {
+        console.log(error);
+      })
+      .finally(function() {
+        // always executed
       });
-  }, [tarih]);
+    console.log("sayfam render oldu");
+  }, [datePicker]);
+
   return (
     <div className="App">
-      <Baslik />
-      <OrtaBolum />
-      <Footer />
+      <BiComponent
+        data={apodData}
+        dateChange={setDatePicker}
+        currentDate={datePicker}
+      />
     </div>
   );
 }
